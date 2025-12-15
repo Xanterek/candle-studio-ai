@@ -50,7 +50,7 @@ Ensure the lighting matches the new environment.
   `.trim();
 
   const data = await callNetlifyGenAI({
-    model: "gemini-2.5-flash-image",
+    model: "gemini-2.5-flash-image-preview",
     contents: {
       parts: [
         {
