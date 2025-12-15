@@ -13,9 +13,17 @@ export default async (req: Request) => {
 
   const body = await req.json();
 
-  // pozwalamy frontendowi wybrać model
   const model = body.model || "gemini-1.5-flash";
   delete body.model;
+
+  // 👇 TO JEST FIX NA OBRAZKI:
+  // jeśli model jest "flash-image", to wymuszamy odpowiedź IMAGE
+  if (String(model).includes("flash-image")) {
+    body.config = {
+      ...(body.config || {}),
+      responseModalities: ["IMAGE"],
+    };
+  }
 
   const r = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
@@ -32,4 +40,5 @@ export default async (req: Request) => {
     headers: { "Content-Type": "application/json" },
   });
 };
+
 
