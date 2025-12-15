@@ -102,8 +102,14 @@ Return ONLY valid JSON with:
 
   if (!text) throw new Error("Failed to generate text");
 
-  // Model ma zwrócić czysty JSON
-  return JSON.parse(text) as ListingContent;
+  const cleaned = text
+  .replace(/^```json\s*/i, "")
+  .replace(/^```\s*/i, "")
+  .replace(/```$/i, "")
+  .trim();
+
+return JSON.parse(cleaned) as ListingContent;
+
 };
 
 // 3. Generate Animation (Veo) — na razie wyłączone (musi iść server-side, inaczej się wywala)
