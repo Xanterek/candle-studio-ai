@@ -15,12 +15,26 @@ async function callNetlifyGenAI(payload: any) {
   const text = await res.text();
 
   // funkcja zwraca JSON jako tekst, parsujemy
-  try {
-    return JSON.parse(text);
-  } catch {
-    // jeśli to nie JSON, pokaż surowy błąd
-    throw new Error(text);
-  }
+  if (!text) throw new Error("Empty response from AI");
+
+// usuń ```json i ```
+const cleaned = text
+  .replace(/```json/gi, "")
+  .replace(/```/g, "")
+  .trim();
+
+// wyciągnij czysty JSON
+const start = cleaned.indexOf("{");
+const end = cleaned.lastIndexOf("}");
+
+if (start === -1 || end === -1) {
+  throw new Error("No JSON found:\n" + cleaned);
+}
+
+const jsonOnly = cleaned.slice(start, end + 1);
+
+return JSON.parse(jsonOnly) as ListingContent;
+
 }
 
 // 1. Edit Image Background
