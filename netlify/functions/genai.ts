@@ -5,28 +5,13 @@ export default async (req: Request) => {
 
   const apiKey = process.env.GOOGLE_API_KEY;
   if (!apiKey) {
-    return new Response(
-      JSON.stringify({ error: "Missing GOOGLE_API_KEY in Netlify env vars" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+    return new Response("Missing API key", { status: 500 });
   }
 
   const body = await req.json();
 
-  const model = body.model || "gemini-1.5-flash";
-  delete body.model;
-
-  // 👇 TO JEST FIX NA OBRAZKI:
-  // jeśli model jest "flash-image", to wymuszamy odpowiedź IMAGE
-  if (String(model).includes("flash-image")) {
-    body.config = {
-      ...(body.config || {}),
-      responseModalities: ["IMAGE"],
-    };
-  }
-
   const r = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -35,10 +20,10 @@ export default async (req: Request) => {
   );
 
   const text = await r.text();
+
   return new Response(text, {
     status: r.status,
     headers: { "Content-Type": "application/json" },
   });
 };
-
 
